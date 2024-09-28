@@ -4,5 +4,5 @@ namespace ApiAggregation.Application.Interfaces;
 
 public interface IDataAggregationService
 {
-    Task<AggregratedDataDto> GetAggregatedDataAsync(List<string>? countryNames);
+    Task<IEnumerable<AggregratedDataDto>> GetAggregatedDataAsync(List<string>? countryNames);
 }

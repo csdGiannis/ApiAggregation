@@ -5,6 +5,10 @@ namespace ApiAggregation.Infrastructure.RestCountries;
 
 public static class CountryInformationMapper
 {
+    /// <summary>
+    /// Maps RestCountriesResponse response object to the Domain model CountryInformation as an extention method
+    /// </summary>
+    /// <param name="response">The response object to be mapped to the Domain model</param>
     public static CountryInformation ToCountryInformation(this RestCountriesResponse response)
     {
         return new CountryInformation

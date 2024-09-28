@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ApiAggregation.Domain.DomainModels
+namespace ApiAggregation.Application.DTOs
 {
-    public class Article
+    public class ArticleDto
     {
         public string Source { get; set; } = string.Empty;
         public string Title { get; set; } = string.Empty;

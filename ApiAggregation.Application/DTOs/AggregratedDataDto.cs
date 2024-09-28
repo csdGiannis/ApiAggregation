@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ApiAggregation.Domain.DomainModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,6 +9,8 @@ namespace ApiAggregation.Application.DTOs
 {
     public class AggregratedDataDto
     {
-        public IEnumerable<CountryInformationDto> CountryInformation { get; set; } = new List<CountryInformationDto>();
+        public string CountryName { get; set; } = string.Empty;
+        public CountryInformationDto CountryInformation { get; set; } = new CountryInformationDto();
+        public IEnumerable<ArticleDto> NewsInformation { get; set; } = new List<ArticleDto>();
     }
 }

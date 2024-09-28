@@ -8,7 +8,6 @@ namespace ApiAggregation.Application.DTOs
 {
     public class CountryInformationDto
     {
-        public string NameCommon { get; set; } = string.Empty;
         public string NameOfficial { get; set; } = string.Empty;
         public string Capital { get; set; } = string.Empty;
         public int Population { get; set; }

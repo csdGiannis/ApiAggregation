@@ -11,6 +11,10 @@ namespace ApiAggregation.Infrastructure.NewsApi
 {
     public static class NewsInformationMapper
     {
+        /// <summary>
+        /// Maps ArticleData response object to the Domain model Article as an extention method
+        /// </summary>
+        /// <param name="articlesToMap">The response object to be mapped to the Domain model</param>
         public static IEnumerable<Article> ToArticles(this List<ArticleData> articlesToMap)
         {
             var mappedArticles = new List<Article>();
@@ -19,11 +23,10 @@ namespace ApiAggregation.Infrastructure.NewsApi
                 mappedArticles.Add(
                     new Article
                     {
-                        Source = article.Source.Name,
-                        Title = article.Title,
-                        Content = article.Content,
-                        Description = article.Description,
-                        Url = article.Url,
+                        Source = article.Source != null ? article.Source.Name : string.Empty,
+                        Title = article.Title ?? string.Empty,
+                        Description = article.Description ?? string.Empty,
+                        Url = article.Url ?? string.Empty,
                         PublishedAt = article.PublishedAt.ToShortDateString()
                     }
                 );

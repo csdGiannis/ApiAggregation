@@ -18,27 +18,32 @@ public class NewsDataProvider : INewsDataProvider
     {
         _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
     }
+
+    /// <summary>
+    /// The data provider responsible for returning the News API data after mapping it to the Domain Model NewsInformation
+    /// </summary>
     public async Task<IEnumerable<NewsInformation>> GetNewsInformation(List<string> countryNames)
     {
         var newsData = new List<NewsInformation>();
 
         var newsInformationFromExternalApi = await GetNewsByCountryFromExternalApi(countryNames);
 
+        //this status is provided by the News API
         if (newsInformationFromExternalApi.Status == "ok")
         {
             var articlesFromExternalApi = newsInformationFromExternalApi.Articles;
+            //making a seperate object of Articles for each Article based on containing the country keyword, mapping it and returning them as Domain model 
             foreach (var countryName in countryNames)
             {
                 var articlesToMap = articlesFromExternalApi.Where(x => (x.Title != null && x.Title.ToLower().Contains(countryName))
                                                                 || (x.Description != null && x.Description.ToLower().Contains(countryName))
-                                                                || (x.Content != null && x.Content.ToLower().Contains(countryName))
                                                             ).ToList();
                 if (articlesToMap.Any())
                 {
                     newsData.Add(new NewsInformation
                     {
                         Country = countryName,
-                        Articles = articlesToMap.ToArticles()
+                        Articles = articlesToMap.ToArticles() //map extention for grouped response results into Domain model of NewsInformation
                     });
                 }
                 else
@@ -55,6 +60,10 @@ public class NewsDataProvider : INewsDataProvider
         return newsData;
     }
 
+
+    /// <summary>
+    /// This method is responsible for fetching the new data from the News API,deserializing it with the help of Newtonsoft.Json to a response object
+    /// </summary>
     private async Task<NewsApiResponse> GetNewsByCountryFromExternalApi(List<string> countries)
     {
         var countrySearchQuery = string.Join(" OR ", countries);

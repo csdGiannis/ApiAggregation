@@ -18,12 +18,18 @@ public class DataAggregationService : IDataAggregationService
         _newsDataProvider = newsDataProvider ?? throw new ArgumentNullException(nameof(newsDataProvider));
     }
 
-    public async Task<AggregratedDataDto> GetAggregatedDataAsync(List<string>? countryNames)
+    /// <summary>Service responsible for implementing the simultaneous API calls after fetching and mapping the data from the clients.</summary>
+    /// <remarks>
+    /// First Domain models are created from the external data providers asynchronously.
+    /// Then the Domain models are mapped into the corresponding DTOs and group on the final aggregated Dtos to return to the controller
+    /// </remarks>
+    /// <returns>An IEnumerable AggregatedDataDto object which contains all the external APIs data grouped per country</returns>
+    public async Task<IEnumerable<AggregratedDataDto>> GetAggregatedDataAsync(List<string>? countryNames)
     {
         //Default country list contains Greece
         countryNames ??= new List<string> { "Greece" };
 
-        countryNames = countryNames.ConvertAll(x => x.ToLower()); //toLower to ignore casing at searching
+        countryNames = countryNames.ConvertAll(x => x.Trim().ToLower()); //toLower to ignore casing at searching
 
         var countryInformation = await _countriesDataProvider.GetCountryInformation(countryNames);
         var newsInformation = await _newsDataProvider.GetNewsInformation(countryNames);
@@ -34,19 +40,27 @@ public class DataAggregationService : IDataAggregationService
         if (countryInformation == null)
             throw new RestException(HttpStatusCode.BadRequest, $"Error retrieving {nameof(countryInformation)}");
 
-        var countryData = new List<CountryInformationDto>();
-
-        foreach (var country in countryInformation)
+        var aggregatedData = new List<AggregratedDataDto>();
+        foreach (var country in countryNames)
         {
-            var mappedCountry = country?.ToCountryInformationDto();
+            //map to DTO per country and article list and add to the AggegatedDataDto
+            var mappedCountry = countryInformation.Where(x => x.NameCommon.ToLower() == country
+                                                        || x.NameOfficial.ToLower().Contains(country)
+                                                    ).FirstOrDefault()?.ToCountryInformationDto();
+
+
+            var mappedNews = newsInformation.Where(x => x.Country == country).FirstOrDefault()?.ToNewsInformationDto(); //extention method for mapping to Dto 
+
             if (mappedCountry != null)
-                countryData.Add(mappedCountry);
+            {
+                aggregatedData.Add(new AggregratedDataDto
+                {
+                    CountryName = country,
+                    CountryInformation = mappedCountry,
+                    NewsInformation = mappedNews ?? new List<ArticleDto>()
+                });
+            }    
         }
-
-        var aggregatedData = new AggregratedDataDto()
-        {
-            CountryInformation = countryData
-        };
 
         return aggregatedData;
     }
