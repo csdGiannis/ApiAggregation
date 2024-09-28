@@ -1,11 +1,11 @@
 using Serilog;
 using ApiAggregation.API.Installers;
 using ApiAggregation.API.Middleware;
+using Serilog.Events;
 
 Log.Logger = new LoggerConfiguration()
-    .MinimumLevel.Warning()
-    .WriteTo.Console()
-    .WriteTo.File("logs/ApiAggregation.txt", rollingInterval: RollingInterval.Day)
+    .WriteTo.File("logs/ApiAggregation.txt", rollingInterval: RollingInterval.Day, restrictedToMinimumLevel: LogEventLevel.Warning)
+    .WriteTo.Console(restrictedToMinimumLevel: LogEventLevel.Information)
     .CreateLogger();
 
 var builder = WebApplication.CreateBuilder(args);

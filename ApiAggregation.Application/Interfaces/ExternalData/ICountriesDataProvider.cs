@@ -4,5 +4,5 @@ namespace ApiAggregation.Application.Interfaces.ExternalData;
 
 public interface ICountriesDataProvider
 {
-    Task<IEnumerable<CountryInformation>> GetCountryInformation(List<string> countryNames);
+    Task<IEnumerable<CountryInformation>> GetCountryInformation(List<string> countryNames, CancellationToken cancellationToken);
 }

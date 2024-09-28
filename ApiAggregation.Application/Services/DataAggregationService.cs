@@ -24,16 +24,13 @@ public class DataAggregationService : IDataAggregationService
     /// Then the Domain models are mapped into the corresponding DTOs and group on the final aggregated Dtos to return to the controller
     /// </remarks>
     /// <returns>An IEnumerable AggregatedDataDto object which contains all the external APIs data grouped per country</returns>
-    public async Task<IEnumerable<AggregratedDataDto>> GetAggregatedDataAsync(List<string>? countryNames)
+    public async Task<IEnumerable<AggregratedDataDto>> GetAggregatedDataAsync(RequestQuery requestParameters, CancellationToken cancellationToken)
     {
-        //Default country list contains Greece
-        countryNames ??= new List<string> { "Greece" };
-
-        countryNames = countryNames.ConvertAll(x => x.Trim().ToLower()); //Trim for imput fix and toLower to ignore casing at searching
+        var countryNames = requestParameters.CountryNames.ConvertAll(x => x.Trim().ToLower()); //Trim for imput fix and toLower to ignore casing at searching
 
         //simultaneously starting the tasks
-        var countryInformationTask = _countriesDataProvider.GetCountryInformation(countryNames);
-        var newsInformationTask = _newsDataProvider.GetNewsInformation(countryNames);
+        var countryInformationTask = _countriesDataProvider.GetCountryInformation(countryNames, cancellationToken);
+        var newsInformationTask = _newsDataProvider.GetNewsInformation(countryNames, cancellationToken);
         //third api
 
         await Task.WhenAll(countryInformationTask, newsInformationTask); //takes care of waiting till all simultaneous tasks end

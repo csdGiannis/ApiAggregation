@@ -19,9 +19,9 @@ public class CountriesDataProvider : ICountriesDataProvider
     /// <summary>
     /// The data provider responsible for returning the RestCountries API data after mapping it to the Domain Model CountryInformation
     /// </summary>
-    public async Task<IEnumerable<CountryInformation>> GetCountryInformation(List<string> countryNames)
+    public async Task<IEnumerable<CountryInformation>> GetCountryInformation(List<string> countryNames, CancellationToken cancellationToken)
     {
-        var countryInformationFromExternalApi = await GetCountryInformationFromExternalApi(countryNames);
+        var countryInformationFromExternalApi = await GetCountryInformationFromExternalApi(countryNames, cancellationToken);
 
         var countryData = new List<CountryInformation>();
 
@@ -39,9 +39,9 @@ public class CountriesDataProvider : ICountriesDataProvider
     /// <summary>
     /// This method is responsible for fetching the country data from the RestCountries API,deserializing it with the help of Newtonsoft.Json to a response object
     /// </summary>
-    private async Task<IEnumerable<RestCountriesResponse>> GetCountryInformationFromExternalApi(List<string> countryNames)
+    private async Task<IEnumerable<RestCountriesResponse>> GetCountryInformationFromExternalApi(List<string> countryNames, CancellationToken cancellationToken)
     {
-        var response = await _httpClient.GetAsync($"https://restcountries.com/v3.1/all");
+        var response = await _httpClient.GetAsync($"https://restcountries.com/v3.1/all", cancellationToken);
         if (!response.IsSuccessStatusCode)
         {
             return new List<RestCountriesResponse>();

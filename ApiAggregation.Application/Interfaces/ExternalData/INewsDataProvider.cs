@@ -9,6 +9,6 @@ namespace ApiAggregation.Application.Interfaces.ExternalData
 {
     public interface INewsDataProvider
     {
-        Task<IEnumerable<NewsInformation>> GetNewsInformation(List<string> countryNames);
+        Task<IEnumerable<NewsInformation>> GetNewsInformation(List<string> countryNames, CancellationToken cancellationToken);
     }
 }

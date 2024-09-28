@@ -22,11 +22,11 @@ public class NewsDataProvider : INewsDataProvider
     /// <summary>
     /// The data provider responsible for returning the News API data after mapping it to the Domain Model NewsInformation
     /// </summary>
-    public async Task<IEnumerable<NewsInformation>> GetNewsInformation(List<string> countryNames)
+    public async Task<IEnumerable<NewsInformation>> GetNewsInformation(List<string> countryNames, CancellationToken cancellationToken)
     {
         var newsData = new List<NewsInformation>();
 
-        var newsInformationFromExternalApi = await GetNewsByCountryFromExternalApi(countryNames);
+        var newsInformationFromExternalApi = await GetNewsByCountryFromExternalApi(countryNames, cancellationToken);
 
         //this status is provided by the News API
         if (newsInformationFromExternalApi.Status == "ok")
@@ -64,13 +64,13 @@ public class NewsDataProvider : INewsDataProvider
     /// <summary>
     /// This method is responsible for fetching the new data from the News API,deserializing it with the help of Newtonsoft.Json to a response object
     /// </summary>
-    private async Task<NewsApiResponse> GetNewsByCountryFromExternalApi(List<string> countries)
+    private async Task<NewsApiResponse> GetNewsByCountryFromExternalApi(List<string> countries, CancellationToken cancellationToken)
     {
         var countrySearchQuery = string.Join(" OR ", countries);
 
         var requestUrl = $"everything?q={WebUtility.UrlEncode(countrySearchQuery)}&apiKey=be6c74549e2f499f9a405d96328f77f0";
 
-        var response = await _httpClient.GetAsync(requestUrl);
+        var response = await _httpClient.GetAsync(requestUrl, cancellationToken);
 
         if (!response.IsSuccessStatusCode)
         {
