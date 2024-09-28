@@ -29,13 +29,17 @@ public class DataAggregationService : IDataAggregationService
         //Default country list contains Greece
         countryNames ??= new List<string> { "Greece" };
 
-        countryNames = countryNames.ConvertAll(x => x.Trim().ToLower()); //toLower to ignore casing at searching
+        countryNames = countryNames.ConvertAll(x => x.Trim().ToLower()); //Trim for imput fix and toLower to ignore casing at searching
 
-        var countryInformation = await _countriesDataProvider.GetCountryInformation(countryNames);
-        var newsInformation = await _newsDataProvider.GetNewsInformation(countryNames);
+        //simultaneously starting the tasks
+        var countryInformationTask = _countriesDataProvider.GetCountryInformation(countryNames);
+        var newsInformationTask = _newsDataProvider.GetNewsInformation(countryNames);
         //third api
 
-        //.whenall use
+        await Task.WhenAll(countryInformationTask, newsInformationTask); //takes care of waiting till all simultaneous tasks end
+
+        var countryInformation = await countryInformationTask;
+        var newsInformation = await newsInformationTask;
 
         if (countryInformation == null)
             throw new RestException(HttpStatusCode.BadRequest, $"Error retrieving {nameof(countryInformation)}");
