@@ -23,6 +23,14 @@ namespace ApiAggregation.API.Controllers
                 {
                     keyWord.MaximumLength(20).WithMessage("Keyword's character limit is 20.");
                 });
+            RuleFor(r => r.PublishYear)
+                .Must(publishYear => publishYear != null ?
+                    publishYear <= DateTime.Now.Year && publishYear >= 1700 : true)
+                    .WithMessage("The publish year can be from 1700 to current year.");
+            RuleFor(r => r.PageSize)
+                    .Must(pageSize => pageSize <= 100 && pageSize >= 10).WithMessage("The page size can be set from 10 to 100");
+            RuleFor(r => r.PageNumber)
+                    .Must(pageNumber => pageNumber <= 200 && pageNumber >= 1).WithMessage("The page number can be set from 1 to 200");
         }
     }
 

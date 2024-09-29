@@ -1,4 +1,4 @@
-﻿using ApiAggregation.Application.DTOs.Country;
+﻿using ApiAggregation.Application.DTOs;
 using ApiAggregation.Domain.DomainModels;
 
 namespace ApiAggregation.Application.Mappers

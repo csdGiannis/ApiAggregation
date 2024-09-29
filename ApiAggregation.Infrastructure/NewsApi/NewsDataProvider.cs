@@ -1,4 +1,5 @@
-﻿using ApiAggregation.Application.Errors;
+﻿using ApiAggregation.Application.DTOs;
+using ApiAggregation.Application.Errors;
 using ApiAggregation.Application.Interfaces.ExternalData;
 using ApiAggregation.Domain.DomainModels;
 using ApiAggregation.Infrastructure.NewsApi.ResponseObjects;
@@ -21,9 +22,9 @@ public class NewsDataProvider : INewsDataProvider
     /// <summary>
     /// The data provider responsible for returning the News API data after mapping it to the News Domain Model
     /// </summary>
-    public async Task<News> GetNews(IEnumerable<string> countryNames, IEnumerable<string> keyWords, CancellationToken cancellationToken)
+    public async Task<News> GetNews(RequestQuery requestParameters, CancellationToken cancellationToken)
     {
-        var newsFromExternalApi = await GetNewsByCountryFromExternalApi(countryNames: countryNames, keyWords: keyWords, cancellationToken);
+        var newsFromExternalApi = await GetNewsByCountryFromExternalApi(requestParameters, cancellationToken);
 
         if (newsFromExternalApi != null)
         {
@@ -37,17 +38,16 @@ public class NewsDataProvider : INewsDataProvider
     /// <summary>
     /// This method is responsible for fetching the new data from the News API,deserializing it with the help of Newtonsoft.Json to a response object
     /// </summary>
-    private async Task<NewsApiResponse> GetNewsByCountryFromExternalApi(IEnumerable<string> countryNames,
-                                                                IEnumerable<string> keyWords, CancellationToken cancellationToken)
+    private async Task<NewsApiResponse> GetNewsByCountryFromExternalApi(RequestQuery requestParameters, CancellationToken cancellationToken)
     {
-        var countrySearchQuery = string.Join(" AND ", countryNames);
-        if (keyWords.Any())
+        var countrySearchQuery = string.Join(" AND ", requestParameters.CountryNames);
+        if (requestParameters.KeyWords.Any())
         {
-            var keyWordSearchQuery = " AND (" + string.Join(" OR ", keyWords) + ')';
+            var keyWordSearchQuery = " AND (" + string.Join(" OR ", requestParameters.KeyWords) + ')';
             countrySearchQuery += keyWordSearchQuery;
         }
      
-        var requestUrl = $"everything?q={WebUtility.UrlEncode(countrySearchQuery)}&searchIn=title,description";
+        var requestUrl = $"everything?q={WebUtility.UrlEncode(countrySearchQuery)}&searchIn=title,description&pageSize=100"; //max pageSize is 100 so no more results can be retrieved with a single request
 
         var response = await _httpClient.GetAsync(requestUrl, cancellationToken);
         if (response.IsSuccessStatusCode)
@@ -59,7 +59,7 @@ public class NewsDataProvider : INewsDataProvider
 
                 //this status is provided by the News API
                     if (newsDeserialized != null && newsDeserialized.Status == "ok")
-                    return FilterIncomingArticles(newsDeserialized, countryNames: countryNames, keyWords: keyWords);
+                    return FilterIncomingArticles(newsDeserialized, countryNames: requestParameters.CountryNames, keyWords: requestParameters.KeyWords);
             }
             catch (Exception ex)
             {

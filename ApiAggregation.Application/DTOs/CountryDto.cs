@@ -1,4 +1,4 @@
-﻿namespace ApiAggregation.Application.DTOs.Country
+﻿namespace ApiAggregation.Application.DTOs
 {
     public class CountryDto
     {

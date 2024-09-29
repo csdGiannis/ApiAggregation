@@ -22,7 +22,7 @@ namespace ApiAggregation.Infrastructure.NewsApi
                         Title = article.Title ?? string.Empty,
                         Description = article.Description ?? string.Empty,
                         Url = article.Url ?? string.Empty,
-                        PublishedAt = article.PublishedAt.ToShortDateString()
+                        PublishedAt = article.PublishedAt != null ? article.PublishedAt.Value.Year.ToString() : string.Empty,
                     }
                 );
             }

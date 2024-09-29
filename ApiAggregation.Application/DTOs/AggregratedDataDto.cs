@@ -1,13 +1,12 @@
-﻿using ApiAggregation.Application.DTOs.Books;
-using ApiAggregation.Application.DTOs.Country;
-using ApiAggregation.Application.DTOs.News;
-
-namespace ApiAggregation.Application.DTOs
+﻿namespace ApiAggregation.Application.DTOs
 {
     public class AggregratedDataDto
     {
         public IEnumerable<CountryDto> CountriesInformation { get; set; } = new List<CountryDto>();
-        public NewsDto News { get; set; } = new NewsDto();
-        public LibraryDto Library { get; set; } = new LibraryDto();
+        public int TotalPrintResults { get; set; } = 0;
+        public int PrintsOnCurrentPage { get; set; } = 0;
+        public int PageNumber { get; set; }
+        public int PageSize { get; set; }
+        public ICollection<RelevantPrintDto> RelevantPrints { get; set; } = new List<RelevantPrintDto>();
     }
 }

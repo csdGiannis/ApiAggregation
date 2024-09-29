@@ -1,4 +1,5 @@
-﻿using ApiAggregation.Application.Errors;
+﻿using ApiAggregation.Application.DTOs;
+using ApiAggregation.Application.Errors;
 using ApiAggregation.Application.Interfaces.ExternalData;
 using ApiAggregation.Domain.DomainModels;
 using ApiAggregation.Infrastructure.OpenLibraryAPI.ResponseObjets;
@@ -26,10 +27,9 @@ namespace ApiAggregation.Infrastructure.OpenLibraryAPI
         /// <summary>
         /// The data provider responsible for returning the OpenLibrary API data after mapping it to the Book Domain Model
         /// </summary>
-        public async Task<Library> GetLibrary(IEnumerable<string> countryNames, IEnumerable<string> keyWords,
-                                              CancellationToken cancellationToken)
+        public async Task<Library> GetLibrary(RequestQuery requestParameters, CancellationToken cancellationToken)
         {
-            var libraryFromExternalApi = await GetLibraryFromExternalApi(countryNames: countryNames, keyWords: keyWords, cancellationToken);
+            var libraryFromExternalApi = await GetLibraryFromExternalApi(requestParameters, cancellationToken);
 
             if (libraryFromExternalApi != null)
             {
@@ -43,19 +43,20 @@ namespace ApiAggregation.Infrastructure.OpenLibraryAPI
         /// <summary>
         /// This method is responsible for fetching the country data from the OpenLibrary API,deserializing it with the help of Newtonsoft.Json to a response object
         /// </summary>
-        private async Task<LibraryResponse> GetLibraryFromExternalApi(IEnumerable<string> countryNames, IEnumerable<string> keyWords,
-                                                                      CancellationToken cancellationToken)
+        private async Task<LibraryResponse> GetLibraryFromExternalApi(RequestQuery requestParameters, CancellationToken cancellationToken)
         {
             //setting the filters based on OpenLibrary API's documentation
             //using the title parameter provides "and"
             StringBuilder sbCountry = new();
             sbCountry.Append("title=");
-            sbCountry.Append(string.Join(",", countryNames));
+            sbCountry.Append(string.Join(",", requestParameters.CountryNames));
             sbCountry.Append("&");
 
-            //setting the desired fields according to the documentation and setting the search limit to 100 for this project's purpose
+            //setting the desired fields according to the documentation
             var response = await _httpClient.GetAsync($"search.json?{sbCountry.ToString()}" +
-                $"&fields=title,publish_year,author_name,language&limit=100", cancellationToken); 
+                //Setting a default result limit.The final pagination happens to the DataAggregationService along with News API results
+                $"limit=999&" + 
+                $"&fields=title,publish_year,author_name,language", cancellationToken);
 
             if (response.IsSuccessStatusCode)
             {
@@ -65,7 +66,7 @@ namespace ApiAggregation.Infrastructure.OpenLibraryAPI
                     var libraryDeserialized = JsonConvert.DeserializeObject<LibraryResponse>(responseAsString);
 
                     if (libraryDeserialized != null)
-                        return FilterIncomingBookTitles(libraryDeserialized, keyWords);
+                        return FilterIncomingBookTitles(libraryDeserialized, requestParameters);
                 }
                 catch (Exception ex)
                 {
@@ -79,7 +80,7 @@ namespace ApiAggregation.Infrastructure.OpenLibraryAPI
         /// <summary>
         /// This method accepts the book results from the OpenLibrary API and filters their titles based on a IEnumerable of keywords
         /// </summary>
-        private static LibraryResponse FilterIncomingBookTitles(LibraryResponse libraryResponse, IEnumerable<string> keyWords)
+        private static LibraryResponse FilterIncomingBookTitles(LibraryResponse libraryResponse, RequestQuery requestParameters)
         {
             if (libraryResponse.Docs.Any())
             {
@@ -87,11 +88,11 @@ namespace ApiAggregation.Infrastructure.OpenLibraryAPI
                 //The response can contain books with the same title so filtering is needed
                 //Also the OpenLibrary API does not contain a feature for logical OR so custom filtering must be applied
                 var filteredBooks = booksToGetFiltered.DistinctBy(x => x.Title)
-                                                  .Where(book => keyWords.Any() ?
-                                                        keyWords.Any(keyWord => book.Title.Contains(keyWord, StringComparison.OrdinalIgnoreCase))
+                                                  .Where(book => requestParameters.KeyWords.Any() ?
+                                                        requestParameters.KeyWords.Any(keyWord => book.Title.Contains(keyWord, StringComparison.OrdinalIgnoreCase))
                                                             : true)
                                                   .ToList();
-                                                       
+
                 return new LibraryResponse
                 {
                     NumFound = filteredBooks.Count,

@@ -23,7 +23,7 @@ namespace ApiAggregation.Infrastructure.NewsApi.ResponseObjects
         public string UrlToImage { get; set; } = string.Empty;
 
         [JsonProperty("publishedAt")]
-        public DateTime PublishedAt { get; set; } 
+        public DateTime? PublishedAt { get; set; } 
 
         [JsonProperty("content")]
         public string Content { get; set; } = string.Empty;

@@ -33,18 +33,14 @@ public class DataAggregationService : IDataAggregationService
     public async Task<AggregratedDataDto> GetAggregatedDataAsync(RequestQuery requestParameters, CancellationToken cancellationToken)
     {
         //Adjusting the List of strings inputted by the User. Defaults: Country Names - "Greece", KeyWords - empty
-        var countryNames = FormatStringInputList(requestParameters.CountryNames);
-        var keyWords = requestParameters.KeyWords.Count > 0 ? FormatStringInputList(requestParameters.KeyWords)
+        requestParameters.CountryNames= FormatStringInputList(requestParameters.CountryNames);
+        requestParameters.KeyWords = requestParameters.KeyWords.Any() ? FormatStringInputList(requestParameters.KeyWords)
                                                             : new List<string>();
 
-        ////The news/book keywords depend on the country the user has inputted in order to get relevant results
-        ////The country names are added to the list
-        //keyWords.AddRange(countryNames);
-
         //Simultaneously starting the tasks while using Circuit breaker pattern to trigger when any external API keeps returning bad requests.
-        var countriesTask = ExecuteCountriesTask(countryNames, cancellationToken);
-        var newsTask = ExecuteNewsTask(countryNames: countryNames, keyWords: keyWords, cancellationToken);
-        var libraryTask = ExecuteLibraryTask(countryNames: countryNames, keyWords: keyWords, cancellationToken);
+        var countriesTask = ExecuteCountriesTask(requestParameters, cancellationToken);
+        var newsTask = ExecuteNewsTask(requestParameters, cancellationToken);
+        var libraryTask = ExecuteLibraryTask(requestParameters, cancellationToken);
 
         //Completing tasks simultaneously
         await Task.WhenAll(countriesTask, newsTask, libraryTask);
@@ -56,7 +52,7 @@ public class DataAggregationService : IDataAggregationService
 
         //if the user has not inputed any valid country names, no results should be returned
         if (countries.Any())
-            return MapAndAggregateDataPerCountry(countries, news, library);
+            return MapAndAggregateDataPerCountry(countries, news, library, requestParameters);
 
         return new AggregratedDataDto();
     }
@@ -68,11 +64,11 @@ public class DataAggregationService : IDataAggregationService
     /// Catching the error (before reaching the middleware error handler) allows to log it, while the application is still running 
     /// </remarks>
     /// <returns>An IEnumerable of the corresponding Domain model</returns>
-    private async Task<IEnumerable<Country>> ExecuteCountriesTask(IEnumerable<string> keyWords, CancellationToken cancellationToken)
+    private async Task<IEnumerable<Country>> ExecuteCountriesTask(RequestQuery requestParameters, CancellationToken cancellationToken)
     {
         try
         {
-            return await _countriesDataProvider.GetCountries(keyWords, cancellationToken);
+            return await _countriesDataProvider.GetCountries(requestParameters, cancellationToken);
         }
         catch (BrokenCircuitException bcEx)
         {
@@ -81,12 +77,11 @@ public class DataAggregationService : IDataAggregationService
         }
     }
 
-    private async Task<News> ExecuteNewsTask(IEnumerable<string> countryNames, IEnumerable<string> keyWords,
-                                             CancellationToken cancellationToken)
+    private async Task<News> ExecuteNewsTask(RequestQuery requestParameters, CancellationToken cancellationToken)
     {
         try
         {
-            return await _newsDataProvider.GetNews(countryNames: countryNames, keyWords: keyWords, cancellationToken);
+            return await _newsDataProvider.GetNews(requestParameters, cancellationToken);
         }
         catch (BrokenCircuitException bcEx)
         {
@@ -95,12 +90,11 @@ public class DataAggregationService : IDataAggregationService
         }
     }
 
-    private async Task<Library> ExecuteLibraryTask(IEnumerable<string> countryNames, IEnumerable<string> keyWords,
-                                                    CancellationToken cancellationToken)
+    private async Task<Library> ExecuteLibraryTask(RequestQuery requestParameters, CancellationToken cancellationToken)
     {
         try
         {
-            return await _libraryDataProvider.GetLibrary(countryNames: countryNames, keyWords: keyWords, cancellationToken);
+            return await _libraryDataProvider.GetLibrary(requestParameters, cancellationToken);
         }
         catch (BrokenCircuitException bcEx)
         {
@@ -113,23 +107,56 @@ public class DataAggregationService : IDataAggregationService
     /// <param name="countries">The mapped domain model returned from the RestCountries API</param>
     /// <param name="news">The mapped domain model returned from the News API</param>
     /// <param name="library">The mapped domain model returned from the OpenLibrary API</param>
-    /// <returns>An AggregatedDataDto object which contains all the external APIs data</returns>
-    private AggregratedDataDto MapAndAggregateDataPerCountry(IEnumerable<Country> countries,
-                                                             News news,
-                                                             Library library)
-    {       
+    /// <returns>An filtered AggregatedDataDto object which contains all the external APIs data</returns>
+    private AggregratedDataDto MapAndAggregateDataPerCountry(IEnumerable<Country> countries, News news, Library library,
+                                                            RequestQuery requestParameters)
+    {
+        //merging the results into one list of RelevantPrints objects 
         AggregratedDataDto aggregratedData = new AggregratedDataDto
         {
             CountriesInformation = countries.ToCountriesDto(),
-            News = news.ToNewsDto(),
-            Library = library.ToLibraryDto()
+            RelevantPrints = RelevantPrintDtoMapper.ToRelevantPrints(library, news),
+            PageNumber = requestParameters.PageNumber,
+            PageSize = requestParameters.PageSize
         };
+        //total number of prints
+        aggregratedData.TotalPrintResults = aggregratedData.RelevantPrints.Count;
+
+        //apply filters and  pagination
+        aggregratedData.RelevantPrints = aggregratedData.RelevantPrints
+            //filtering
+            .Where(b => requestParameters.IsBook == true ? b.IsBook == true : true) //filters if it is a book
+            .Where(a => requestParameters.IsArticle == true ? a.IsArticle == true : true) //filters if it is an article
+            .Where(p => requestParameters.PublishYear != null ? p.PublishYear == requestParameters.PublishYear.ToString() : true) //filters publish year           
+            //sorting
+            .OrderBy(t => requestParameters.SortOrder.ToLower() == "ascending" && requestParameters.SortField.ToLower() == "title" ? t.Title : null)
+            .OrderBy(t => requestParameters.SortOrder.ToLower() == "ascending" && requestParameters.SortField.ToLower() == "publishyear" ? (int.TryParse(t.PublishYear, out int result) ? result : int.MinValue) : int.MinValue)
+            .OrderBy(t => requestParameters.SortOrder.ToLower() == "ascending" && requestParameters.SortField.ToLower() == "source" ? t.Source : null)
+            .OrderBy(t => requestParameters.SortOrder.ToLower() == "ascending" && requestParameters.SortField.ToLower() == "description" ? t.Description : null)
+            .OrderBy(t => requestParameters.SortOrder.ToLower() == "ascending" && requestParameters.SortField.ToLower() == "url" ? t.Url : null)
+            .OrderBy(t => requestParameters.SortOrder.ToLower() == "descending" && requestParameters.SortField.ToLower() == "isbook" ? t.IsBook : false)//booleans have to sort opposite way
+            .OrderBy(t => requestParameters.SortOrder.ToLower() == "descending" && requestParameters.SortField.ToLower() == "isarticle" ? t.IsArticle : false)//booleans have to sort opposite way
+
+            .OrderByDescending(t => requestParameters.SortOrder.ToLower() == "descending" && requestParameters.SortField.ToLower() == "title" ? t.Title : null)
+            .OrderByDescending(t => requestParameters.SortOrder.ToLower() == "descending" && requestParameters.SortField.ToLower() == "publishyear" ? (int.TryParse(t.PublishYear, out int result) ? result : int.MinValue) : int.MinValue)
+            .OrderByDescending(t => requestParameters.SortOrder.ToLower() == "descending" && requestParameters.SortField.ToLower() == "source" ? t.Source : null)
+            .OrderByDescending(t => requestParameters.SortOrder.ToLower() == "descending" && requestParameters.SortField.ToLower() == "description" ? t.Description : null)
+            .OrderByDescending(t => requestParameters.SortOrder.ToLower() == "descending" && requestParameters.SortField.ToLower() == "url" ? t.Url : null)
+            .OrderByDescending(t => requestParameters.SortOrder.ToLower() == "ascending" && requestParameters.SortField.ToLower() == "isbook" ? t.IsBook : false) //booleans have to sort opposite way
+            .OrderByDescending(t => requestParameters.SortOrder.ToLower() == "ascending" && requestParameters.SortField.ToLower() == "isarticle" ? t.IsArticle : false)//booleans have to sort opposite way
+            //pagination
+            .Skip((requestParameters.PageNumber - 1) * requestParameters.PageSize)
+            .Take(requestParameters.PageSize)          
+            .ToList();
+
+        //number of prints on current selected page
+            aggregratedData.PrintsOnCurrentPage = aggregratedData.RelevantPrints.Count;
 
         return aggregratedData;
     }
 
     /// <summary>Formats the IEnumerable of strings to trimmed,lower,non-empty and not-null List of strings</summary>
-    private IEnumerable<string> FormatStringInputList(IEnumerable<string> inputList) =>
+    private ICollection<string> FormatStringInputList(IEnumerable<string> inputList) =>
         inputList.Where(x => !string.IsNullOrEmpty(x))
                  .ToList()
                  .ConvertAll(x => x.Trim().ToLower());
