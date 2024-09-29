@@ -3,13 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.11.35303.130
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApiAggregation.API", "ApiAggregation.API\ApiAggregation.API.csproj", "{B4978C53-F4B9-4FB0-9AF6-AA5DDF65DD6E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ApiAggregation.API", "ApiAggregation.API\ApiAggregation.API.csproj", "{B4978C53-F4B9-4FB0-9AF6-AA5DDF65DD6E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApiAggregation.Application", "ApiAggregation.Application\ApiAggregation.Application.csproj", "{10310386-F365-4A22-9C1F-26CC9C72821C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ApiAggregation.Application", "ApiAggregation.Application\ApiAggregation.Application.csproj", "{10310386-F365-4A22-9C1F-26CC9C72821C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApiAggregation.Domain", "ApiAggregation.Domain\ApiAggregation.Domain.csproj", "{32A50A6D-4947-41DF-9139-826BB5A5F544}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ApiAggregation.Domain", "ApiAggregation.Domain\ApiAggregation.Domain.csproj", "{32A50A6D-4947-41DF-9139-826BB5A5F544}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApiAggregation.Infrastructure", "ApiAggregation.Infrastructure\ApiAggregation.Infrastructure.csproj", "{F63EF961-830B-4784-9745-9177F0D2AD50}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ApiAggregation.Infrastructure", "ApiAggregation.Infrastructure\ApiAggregation.Infrastructure.csproj", "{F63EF961-830B-4784-9745-9177F0D2AD50}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApiAggregation.SharedUtilites", "ApiAggregation.SharedUtilites\ApiAggregation.SharedUtilites.csproj", "{1A93383C-21E6-4154-99FB-F8FB91D0DF49}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{F63EF961-830B-4784-9745-9177F0D2AD50}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F63EF961-830B-4784-9745-9177F0D2AD50}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F63EF961-830B-4784-9745-9177F0D2AD50}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1A93383C-21E6-4154-99FB-F8FB91D0DF49}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1A93383C-21E6-4154-99FB-F8FB91D0DF49}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1A93383C-21E6-4154-99FB-F8FB91D0DF49}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1A93383C-21E6-4154-99FB-F8FB91D0DF49}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

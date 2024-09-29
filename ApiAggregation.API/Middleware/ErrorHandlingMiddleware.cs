@@ -14,15 +14,21 @@ namespace ApiAggregation.API.Middleware
             _next = next;
         }
 
-        public async Task Invoke(HttpContext context)
+        public async Task Invoke(HttpContext context, ILogger<ErrorHandlingMiddleware> logger)
         {
             try
             {
                 await _next(context);
             }
+            catch(OperationCanceledException opc)
+            {
+                //Cancelling an operation should not be logged either throw an error
+            }
             catch (Exception ex)
             {
-                await HandleExceptionAsync(context, ex, _logger);
+                //not handing exception at cancel requests
+                if (!context.RequestAborted.IsCancellationRequested)
+                    await HandleExceptionAsync(context, ex, _logger);
             }
         }
 

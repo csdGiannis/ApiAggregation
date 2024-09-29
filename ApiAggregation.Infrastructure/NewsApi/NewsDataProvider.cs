@@ -1,12 +1,11 @@
-﻿using ApiAggregation.Application.DTOs;
-using ApiAggregation.Application.Errors;
+﻿using ApiAggregation.Application.Errors;
 using ApiAggregation.Application.Interfaces.ExternalData;
 using ApiAggregation.Domain.DomainModels;
 using ApiAggregation.Infrastructure.NewsApi.ResponseObjects;
-using ApiAggregation.Infrastructure.RestCountries.ResponseObjects;
+using ApiAggregation.Infrastructure.OpenLibraryAPI.ResponseObjets;
 using Newtonsoft.Json;
-using System.Diagnostics.Metrics;
 using System.Net;
+using static System.Reflection.Metadata.BlobBuilder;
 
 namespace ApiAggregation.Infrastructure.NewsApi;
 
@@ -20,73 +19,85 @@ public class NewsDataProvider : INewsDataProvider
     }
 
     /// <summary>
-    /// The data provider responsible for returning the News API data after mapping it to the Domain Model NewsInformation
+    /// The data provider responsible for returning the News API data after mapping it to the News Domain Model
     /// </summary>
-    public async Task<IEnumerable<NewsInformation>> GetNewsInformation(List<string> countryNames, CancellationToken cancellationToken)
+    public async Task<News> GetNews(IEnumerable<string> countryNames, IEnumerable<string> keyWords, CancellationToken cancellationToken)
     {
-        var newsData = new List<NewsInformation>();
+        var newsFromExternalApi = await GetNewsByCountryFromExternalApi(countryNames: countryNames, keyWords: keyWords, cancellationToken);
 
-        var newsInformationFromExternalApi = await GetNewsByCountryFromExternalApi(countryNames, cancellationToken);
-
-        //this status is provided by the News API
-        if (newsInformationFromExternalApi.Status == "ok")
+        if (newsFromExternalApi != null)
         {
-            var articlesFromExternalApi = newsInformationFromExternalApi.Articles;
-            //making a seperate object of Articles for each Article based on containing the country keyword, mapping it and returning them as Domain model 
-            foreach (var countryName in countryNames)
-            {
-                var articlesToMap = articlesFromExternalApi.Where(x => (x.Title != null && x.Title.ToLower().Contains(countryName))
-                                                                || (x.Description != null && x.Description.ToLower().Contains(countryName))
-                                                            ).ToList();
-                if (articlesToMap.Any())
-                {
-                    newsData.Add(new NewsInformation
-                    {
-                        Country = countryName,
-                        Articles = articlesToMap.ToArticles() //map extention for grouped response results into Domain model of NewsInformation
-                    });
-                }
-                else
-                    newsData.Add(new NewsInformation
-                    {
-                        Country = countryName,
-                        Articles = new List<Article>()
-                    });
-            }
+            News mappedNews = newsFromExternalApi.ToNews(); //map extention
+            return mappedNews;
         }
-        else
-            throw new RestException(HttpStatusCode.BadRequest, $"Error retrieving {nameof(newsData)}");
-
-        return newsData;
+        return new News();
     }
 
 
     /// <summary>
     /// This method is responsible for fetching the new data from the News API,deserializing it with the help of Newtonsoft.Json to a response object
     /// </summary>
-    private async Task<NewsApiResponse> GetNewsByCountryFromExternalApi(List<string> countries, CancellationToken cancellationToken)
+    private async Task<NewsApiResponse> GetNewsByCountryFromExternalApi(IEnumerable<string> countryNames,
+                                                                IEnumerable<string> keyWords, CancellationToken cancellationToken)
     {
-        var countrySearchQuery = string.Join(" OR ", countries);
-
-        var requestUrl = $"everything?q={WebUtility.UrlEncode(countrySearchQuery)}&apiKey=be6c74549e2f499f9a405d96328f77f0";
+        var countrySearchQuery = string.Join(" AND ", countryNames);
+        if (keyWords.Any())
+        {
+            var keyWordSearchQuery = " AND (" + string.Join(" OR ", keyWords) + ')';
+            countrySearchQuery += keyWordSearchQuery;
+        }
+     
+        var requestUrl = $"everything?q={WebUtility.UrlEncode(countrySearchQuery)}&searchIn=title,description";
 
         var response = await _httpClient.GetAsync(requestUrl, cancellationToken);
-
-        if (!response.IsSuccessStatusCode)
+        if (response.IsSuccessStatusCode)
         {
-            return new NewsApiResponse();
+            try
+            {
+                var responseAsString = await response.Content.ReadAsStringAsync();
+                var newsDeserialized = JsonConvert.DeserializeObject<NewsApiResponse>(responseAsString);
+
+                //this status is provided by the News API
+                    if (newsDeserialized != null && newsDeserialized.Status == "ok")
+                    return FilterIncomingArticles(newsDeserialized, countryNames: countryNames, keyWords: keyWords);
+            }
+            catch (Exception ex)
+            {
+                throw new RestException(HttpStatusCode.BadRequest, $"Error occured deserializing data from News API: {ex.Message}");
+            }
         }
-
-        var responseAsString = await response.Content.ReadAsStringAsync();
-
-        var news = JsonConvert.DeserializeObject<NewsApiResponse>(responseAsString);
-
-        if (news == null)
-        {   
-            return new NewsApiResponse();
-        }
-
-        return news;
+        return new NewsApiResponse();
     }
 
+    /// <summary>
+    /// This method accepts the news result from the News API and filters the articles based on an IEnumerable of strings
+    /// </summary>
+    private static NewsApiResponse FilterIncomingArticles(NewsApiResponse newsResponse, IEnumerable<string> countryNames,
+                                                          IEnumerable<string> keyWords)
+    {
+        if(newsResponse.Articles.Any())
+        {
+            var filteredArticles = new List<ArticleResponse>();
+
+            /*Response data has to be filtered through this api because sometimes it returns results without containing the keywords
+              while following the documentation. Also a 50 result limit is set for this project's purpose*/
+            var articlesToGetFiltered = newsResponse.Articles;
+            //The result must 1) contain all country names at the title or description 2) contain any of the keywords at the title or description
+            filteredArticles = articlesToGetFiltered.Where(article => countryNames
+                                                        .All(country => article.Title.Contains(country, StringComparison.OrdinalIgnoreCase)
+                                                            || article.Description.Contains(country, StringComparison.OrdinalIgnoreCase)))
+                                                     .Where(article => keyWords.Any() ?
+                                                        keyWords.Any(keyWord => article.Title.Contains(keyWord, StringComparison.OrdinalIgnoreCase)
+                                                                || article.Description.Contains(keyWord, StringComparison.OrdinalIgnoreCase))
+                                                            : true)
+                                                    .Take(50).ToList();
+
+            return new NewsApiResponse
+            {
+                TotalResults = filteredArticles.Count,
+                Articles = filteredArticles
+            };
+        }
+        return new NewsApiResponse();
+    }
 }

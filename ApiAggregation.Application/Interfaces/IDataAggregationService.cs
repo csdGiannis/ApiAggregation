@@ -4,5 +4,5 @@ namespace ApiAggregation.Application.Interfaces;
 
 public interface IDataAggregationService
 {
-    Task<IEnumerable<AggregratedDataDto>> GetAggregatedDataAsync(RequestQuery requestParameters, CancellationToken cancellationToken);
+    Task<AggregratedDataDto> GetAggregatedDataAsync(RequestQuery requestParameters, CancellationToken cancellationToken);
 }

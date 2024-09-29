@@ -17,12 +17,18 @@ namespace ApiAggregation.API.Controllers
                 {
                     countryName.MaximumLength(50).WithMessage("Country's character limit is 50.");
                 });
+            RuleFor(r => r.KeyWords)
+                .Must(keyWords => keyWords.Count <= 10).WithMessage("The request accepts up to 10 keywords at a time.")
+                .ForEach(keyWord =>
+                {
+                    keyWord.MaximumLength(20).WithMessage("Keyword's character limit is 20.");
+                });
         }
     }
 
     [ApiController]
     [Route("api/aggregation")]
-    public sealed class AggregationController : ControllerBase
+    public class AggregationController : ControllerBase
     {
         private readonly IDataAggregationService _dataAggregationService;
 
@@ -43,7 +49,7 @@ namespace ApiAggregation.API.Controllers
         /// <param name="cancellationToken">Cancellation token is used so the request can cancel if the user decides to cancel/refresh the action</param>
         /// <returns>An IEnumerable of type AggregatedDataDto object, merging all external API data</returns>
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<AggregratedDataDto>>> GetAggregatedData([FromQuery] RequestQuery requestParameters,
+        public async Task<ActionResult<AggregratedDataDto>> GetAggregatedData([FromQuery] RequestQuery requestParameters,
                                                                                            CancellationToken cancellationToken)
         {
             var aggregatedData = await _dataAggregationService.GetAggregatedDataAsync(requestParameters, cancellationToken);

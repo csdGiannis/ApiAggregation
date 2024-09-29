@@ -1,9 +1,9 @@
-﻿using ApiAggregation.Application.DTOs;
+﻿using ApiAggregation.Application.Errors;
 using ApiAggregation.Application.Interfaces.ExternalData;
 using ApiAggregation.Domain.DomainModels;
 using ApiAggregation.Infrastructure.RestCountries.ResponseObjects;
 using Newtonsoft.Json;
-using System.Diagnostics.Metrics;
+using System.Net;
 
 namespace ApiAggregation.Infrastructure.RestCountries;
 
@@ -17,45 +17,48 @@ public class CountriesDataProvider : ICountriesDataProvider
     }
 
     /// <summary>
-    /// The data provider responsible for returning the RestCountries API data after mapping it to the Domain Model CountryInformation
+    /// The data provider responsible for returning the RestCountries API data after mapping it to the Country Domain Model
     /// </summary>
-    public async Task<IEnumerable<CountryInformation>> GetCountryInformation(List<string> countryNames, CancellationToken cancellationToken)
+    public async Task<IEnumerable<Country>> GetCountries(IEnumerable<string> keyWords, CancellationToken cancellationToken)
     {
-        var countryInformationFromExternalApi = await GetCountryInformationFromExternalApi(countryNames, cancellationToken);
+        var countriesFromExternalApi = await GetCountriesFromExternalApi(keyWords, cancellationToken);
 
-        var countryData = new List<CountryInformation>();
+        List<Country> mappedCountries = new();
 
-        foreach (var externalCountry in countryInformationFromExternalApi)
+        foreach (RestCountriesResponse externalCountry in countriesFromExternalApi)
         {
             //extention method for mapping response object into data model
-            var mappedCountry = externalCountry?.ToCountryInformation();
+            var mappedCountry = externalCountry?.ToCountry();
             if (mappedCountry != null)
-                countryData.Add(mappedCountry);
+                mappedCountries.Add(mappedCountry);
         }
 
-        return countryData;
+        return mappedCountries;
     }
 
     /// <summary>
     /// This method is responsible for fetching the country data from the RestCountries API,deserializing it with the help of Newtonsoft.Json to a response object
     /// </summary>
-    private async Task<IEnumerable<RestCountriesResponse>> GetCountryInformationFromExternalApi(List<string> countryNames, CancellationToken cancellationToken)
+    private async Task<IEnumerable<RestCountriesResponse>> GetCountriesFromExternalApi(IEnumerable<string> keyWords, CancellationToken cancellationToken)
     {
-        var response = await _httpClient.GetAsync($"https://restcountries.com/v3.1/all", cancellationToken);
-        if (!response.IsSuccessStatusCode)
+        var response = await _httpClient.GetAsync($"all", cancellationToken);
+
+        if (response.IsSuccessStatusCode)
         {
-            return new List<RestCountriesResponse>();
-        }
+            try
+            {
+                var responseAsString = await response.Content.ReadAsStringAsync();
+                var countriesDeserialized = JsonConvert.DeserializeObject<List<RestCountriesResponse>>(responseAsString);
 
-        var responseAsString = await response.Content.ReadAsStringAsync();
-
-        var countries = JsonConvert.DeserializeObject<List<RestCountriesResponse>>(responseAsString);
-
-        if (countries == null || countries.Count == 0)
-        {
-            return new List<RestCountriesResponse>();
-        }
-
-        return countries.Where(x => countryNames.Contains(x.Name.Official.ToLower()) || countryNames.Contains(x.Name.Common.ToLower()));
+                if (countriesDeserialized != null)
+                    return countriesDeserialized.Where(x => keyWords.Contains(x.Name.Official.ToLower()) 
+                                                        || keyWords.Contains(x.Name.Common.ToLower()));
+            }
+            catch (Exception ex)
+            {
+                throw new RestException(HttpStatusCode.BadRequest, $"Error occured deserializing data from RestCountries API: {ex.Message}");
+            }      
+        }    
+        return new List<RestCountriesResponse>();      
     }
 }

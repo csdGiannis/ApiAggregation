@@ -2,6 +2,9 @@ using Serilog;
 using ApiAggregation.API.Installers;
 using ApiAggregation.API.Middleware;
 using Serilog.Events;
+using ApiAggregation.Infrastructure.NewsApi;
+using ApiAggregation.API.Logging;
+using ApiAggregation.SharedUtilites;
 
 Log.Logger = new LoggerConfiguration()
     .WriteTo.File("logs/ApiAggregation.txt", rollingInterval: RollingInterval.Day, restrictedToMinimumLevel: LogEventLevel.Warning)
@@ -22,8 +25,11 @@ builder.Services.AddControllers(options =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+//initializing the shared utility so the logger can be used in the Application lib
+builder.Services.AddSingleton<IApiAggregationLogger, ApiAggregationLogger>(); 
+
 builder.Services.AddApplicationConfig();
-builder.Services.AddInfrastructureConfig();
+builder.Services.AddInfrastructureConfig(builder);
 
 var app = builder.Build();
 

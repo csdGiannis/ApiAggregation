@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace ApiAggregation.Domain.DomainModels
 {
-    public class NewsInformation
+    public class Library
     {
-        public string Country {  get; set; } = string.Empty;
-        public IEnumerable<Article> Articles { get; set; } = new List<Article>();
+        public int TotalResults { get; set; }
+        public List<Book> Books { get; set; } = new List<Book>();
     }
 }

@@ -1,9 +1,4 @@
 ﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ApiAggregation.Infrastructure.NewsApi.ResponseObjects
 {
@@ -12,11 +7,17 @@ namespace ApiAggregation.Infrastructure.NewsApi.ResponseObjects
         [JsonProperty("status")]
         public string Status { get; set; } = string.Empty;
 
+        [JsonProperty("code")]
+        public string Code { get; set; } = string.Empty;
+
+        [JsonProperty("message")]
+        public string Message { get; set; } = string.Empty;
+
         [JsonProperty("totalResults")]
         public int TotalResults { get; set; }
 
         [JsonProperty("articles")]
-        public IEnumerable<ArticleData> Articles { get; set; } = new List<ArticleData>();
+        public IEnumerable<ArticleResponse> Articles { get; set; } = new List<ArticleResponse>();
     }
 }
     

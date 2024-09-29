@@ -1,13 +1,8 @@
 ﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ApiAggregation.Infrastructure.NewsApi.ResponseObjects
 {
-    public class ArticleData
+    public class ArticleResponse
     {
         [JsonProperty("source")]
         public Source Source { get; set; } 

@@ -1,24 +1,19 @@
 ﻿using ApiAggregation.Domain.DomainModels;
 using ApiAggregation.Infrastructure.NewsApi.ResponseObjects;
-using ApiAggregation.Infrastructure.RestCountries.ResponseObjects;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ApiAggregation.Infrastructure.NewsApi
 {
-    public static class NewsInformationMapper
+    public static class NewsMapper
     {
         /// <summary>
-        /// Maps ArticleData response object to the Domain model Article as an extention method
+        /// Maps News response objects to the News Domain model as an extention method
         /// </summary>
-        /// <param name="articlesToMap">The response object to be mapped to the Domain model</param>
-        public static IEnumerable<Article> ToArticles(this List<ArticleData> articlesToMap)
+        public static News ToNews(this NewsApiResponse newsResponse)
         {
-            var mappedArticles = new List<Article>();
-            foreach (var article in articlesToMap)
+            List<Article> mappedArticles = new();
+
+            var articleResponse = newsResponse.Articles;
+            foreach (var article in articleResponse)
             {
                 mappedArticles.Add(
                     new Article
@@ -31,7 +26,12 @@ namespace ApiAggregation.Infrastructure.NewsApi
                     }
                 );
             }
-            return mappedArticles;
+
+            return new News
+            {
+                TotalResults = newsResponse.TotalResults,
+                Articles = mappedArticles
+            };
         }
     }
 }
