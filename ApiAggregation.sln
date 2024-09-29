@@ -11,7 +11,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ApiAggregation.Domain", "Ap
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ApiAggregation.Infrastructure", "ApiAggregation.Infrastructure\ApiAggregation.Infrastructure.csproj", "{F63EF961-830B-4784-9745-9177F0D2AD50}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApiAggregation.SharedUtilites", "ApiAggregation.SharedUtilites\ApiAggregation.SharedUtilites.csproj", "{1A93383C-21E6-4154-99FB-F8FB91D0DF49}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ApiAggregation.SharedUtilites", "ApiAggregation.SharedUtilites\ApiAggregation.SharedUtilites.csproj", "{1A93383C-21E6-4154-99FB-F8FB91D0DF49}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{59FE03B9-6777-45FE-A036-6BC710744919}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -45,18 +45,25 @@ namespace ApiAggregation.API.Controllers
             _dataAggregationService = dataAggregationService ?? throw new ArgumentNullException(nameof(dataAggregationService));
         }
 
-        /// <summary>Fetches news articles from the News API based on the provided keyword.  </summary>
+        /// <summary>
+        /// Retrieves aggregated data from external APIs based on the specified filter parameters.
+        /// </summary>
         /// <remarks>
-        /// 1)Errorhandling mostly is taken care of from the Errorhandling middlware which we introduce after UseRouting() at the Program.cs.
-        /// For custom error messaged a RestException object is used, along with the desired httpstatus code and a custom message.
-        /// Also Fluent Validation is added for validating the request parameters if any.
-        /// 2)Format accepted is JSON and output is JSON and XML, all configured in the Program.cs file
-        /// 3)Custom logger Serilog is initialized,for both console and daily file logging (minimum level set is Warning for the file logs).
+        /// 1) Fluent Validation is added for validating the request parameters.
+        /// 2) Accepted input format: JSON via query parameters. The API supports both JSON and XML as output formats based on the client's Accept header.
+        /// 3) A custom logger is used to log requests and responses to both the console and a file for debugging (minimum level for the logging file is set to Warning).
         /// </remarks>
-        /// <param name="requestParameters">RequestQuery requestParameters are optional query parameters for filtering and sorting</param>
-        /// <param name="cancellationToken">Cancellation token is used so the request can cancel if the user decides to cancel/refresh the action</param>
-        /// <returns>An IEnumerable of type AggregatedDataDto object, merging all external API data</returns>
+        /// <param name="requestParameters">The filter parameters used for aggregating data. These are optional query parameters except of page number and size.</param>
+        /// <param name="cancellationToken">Token to monitor for cancellation requests, allowing the operation to be cancelled if necessary.</param>
+        /// <returns>
+        /// An <see cref="ActionResult"/> containing the aggregated data based on the applied filters.
+        /// </returns>
+        /// <response code="200">Returns the aggregated data.</response>
+        /// <response code="400">Bad request.</response>
+        /// <response code="406">Not acceptable. Supported output formats are JSON and XML.</response>
+        /// <response code="500">Server error.</response>
         [HttpGet]
+        [ProducesResponseType(200)]
         public async Task<ActionResult<AggregratedDataDto>> GetAggregatedData([FromQuery] RequestQuery requestParameters,
                                                                                            CancellationToken cancellationToken)
         {

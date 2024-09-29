@@ -17,7 +17,6 @@ namespace ApiAggregation.Application.DTOs
 
         public IEnumerable<string> Language { get; set; } = new List<string>();
 
-        public bool IsBook { get; set; } = false;
-        public bool IsArticle { get; set; } = false;
+        public bool? IsBook { get; set; } = null;
     }
 }

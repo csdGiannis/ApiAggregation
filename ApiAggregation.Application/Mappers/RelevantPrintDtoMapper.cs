@@ -39,7 +39,7 @@ namespace ApiAggregation.Application.Mappers
                         Description = article.Description ?? "",
                         Title = article.Title ?? "",
                         Url = article.Url ?? "",
-                        IsArticle = true
+                        IsBook = false
                     }
                 );
             }

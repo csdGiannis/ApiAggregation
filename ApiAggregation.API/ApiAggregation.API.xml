@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>ApiAggregation.API</name>
+    </assembly>
+    <members>
+        <member name="M:ApiAggregation.API.Controllers.AggregationController.GetAggregatedData(ApiAggregation.Application.DTOs.RequestQuery,System.Threading.CancellationToken)">
+            <summary>
+            Retrieves aggregated data from external APIs based on the specified filter parameters.
+            </summary>
+            <remarks>
+            1) Fluent Validation is added for validating the request parameters.
+            2) Accepted input format: JSON via query parameters. The API supports both JSON and XML as output formats based on the client's Accept header.
+            3) A custom logger is used to log requests and responses to both the console and a file for debugging (minimum level for the logging file is set to Warning).
+            </remarks>
+            <param name="requestParameters">The filter parameters used for aggregating data. These are optional query parameters except of page number and size.</param>
+            <param name="cancellationToken">Token to monitor for cancellation requests, allowing the operation to be cancelled if necessary.</param>
+            <returns>
+            An <see cref="T:Microsoft.AspNetCore.Mvc.ActionResult"/> containing the aggregated data based on the applied filters.
+            </returns>
+            <response code="200">Returns the aggregated data.</response>
+            <response code="400">Bad request.</response>
+            <response code="406">Not acceptable. Supported output formats are JSON and XML.</response>
+            <response code="500">Server error.</response>
+        </member>
+    </members>
+</doc>

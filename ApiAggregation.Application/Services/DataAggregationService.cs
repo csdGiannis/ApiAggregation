@@ -1,10 +1,12 @@
 ﻿using ApiAggregation.Application.DTOs;
+using ApiAggregation.Application.Errors;
 using ApiAggregation.Application.Interfaces;
 using ApiAggregation.Application.Interfaces.ExternalData;
 using ApiAggregation.Application.Mappers;
 using ApiAggregation.Domain.DomainModels;
 using ApiAggregation.SharedUtilites;
 using Polly.CircuitBreaker;
+using System.Net;
 
 namespace AggregatedApi.Application.Services;
 
@@ -53,8 +55,8 @@ public class DataAggregationService : IDataAggregationService
         //if the user has not inputed any valid country names, no results should be returned
         if (countries.Any())
             return MapAndAggregateDataPerCountry(countries, news, library, requestParameters);
-
-        return new AggregratedDataDto();
+        else
+            throw new RestException(HttpStatusCode.BadRequest, "Error: No valid country names are given.");
     }
 
     /// <summary>Executes a task to return external API's data</summary>
@@ -107,6 +109,7 @@ public class DataAggregationService : IDataAggregationService
     /// <param name="countries">The mapped domain model returned from the RestCountries API</param>
     /// <param name="news">The mapped domain model returned from the News API</param>
     /// <param name="library">The mapped domain model returned from the OpenLibrary API</param>
+    /// <param name="requestParameters">The optional filtering options</param>
     /// <returns>An filtered AggregatedDataDto object which contains all the external APIs data</returns>
     private AggregratedDataDto MapAndAggregateDataPerCountry(IEnumerable<Country> countries, News news, Library library,
                                                             RequestQuery requestParameters)
@@ -119,15 +122,12 @@ public class DataAggregationService : IDataAggregationService
             PageNumber = requestParameters.PageNumber,
             PageSize = requestParameters.PageSize
         };
-        //total number of prints
-        aggregratedData.TotalPrintResults = aggregratedData.RelevantPrints.Count;
 
         //apply filters and  pagination
         aggregratedData.RelevantPrints = aggregratedData.RelevantPrints
             //filtering
-            .Where(b => requestParameters.IsBook == true ? b.IsBook == true : true) //filters if it is a book
-            .Where(a => requestParameters.IsArticle == true ? a.IsArticle == true : true) //filters if it is an article
-            .Where(p => requestParameters.PublishYear != null ? p.PublishYear == requestParameters.PublishYear.ToString() : true) //filters publish year           
+            .Where(b => requestParameters.IsBook == true ? b.IsBook == true : requestParameters.IsBook == false ? b.IsBook == false : true)
+            .Where(p => requestParameters.PublishYear != null ? p.PublishYear == requestParameters.PublishYear.ToString() : true)
             //sorting
             .OrderBy(t => requestParameters.SortOrder.ToLower() == "ascending" && requestParameters.SortField.ToLower() == "title" ? t.Title : null)
             .OrderBy(t => requestParameters.SortOrder.ToLower() == "ascending" && requestParameters.SortField.ToLower() == "publishyear" ? (int.TryParse(t.PublishYear, out int result) ? result : int.MinValue) : int.MinValue)
@@ -135,7 +135,6 @@ public class DataAggregationService : IDataAggregationService
             .OrderBy(t => requestParameters.SortOrder.ToLower() == "ascending" && requestParameters.SortField.ToLower() == "description" ? t.Description : null)
             .OrderBy(t => requestParameters.SortOrder.ToLower() == "ascending" && requestParameters.SortField.ToLower() == "url" ? t.Url : null)
             .OrderBy(t => requestParameters.SortOrder.ToLower() == "descending" && requestParameters.SortField.ToLower() == "isbook" ? t.IsBook : false)//booleans have to sort opposite way
-            .OrderBy(t => requestParameters.SortOrder.ToLower() == "descending" && requestParameters.SortField.ToLower() == "isarticle" ? t.IsArticle : false)//booleans have to sort opposite way
 
             .OrderByDescending(t => requestParameters.SortOrder.ToLower() == "descending" && requestParameters.SortField.ToLower() == "title" ? t.Title : null)
             .OrderByDescending(t => requestParameters.SortOrder.ToLower() == "descending" && requestParameters.SortField.ToLower() == "publishyear" ? (int.TryParse(t.PublishYear, out int result) ? result : int.MinValue) : int.MinValue)
@@ -143,14 +142,19 @@ public class DataAggregationService : IDataAggregationService
             .OrderByDescending(t => requestParameters.SortOrder.ToLower() == "descending" && requestParameters.SortField.ToLower() == "description" ? t.Description : null)
             .OrderByDescending(t => requestParameters.SortOrder.ToLower() == "descending" && requestParameters.SortField.ToLower() == "url" ? t.Url : null)
             .OrderByDescending(t => requestParameters.SortOrder.ToLower() == "ascending" && requestParameters.SortField.ToLower() == "isbook" ? t.IsBook : false) //booleans have to sort opposite way
-            .OrderByDescending(t => requestParameters.SortOrder.ToLower() == "ascending" && requestParameters.SortField.ToLower() == "isarticle" ? t.IsArticle : false)//booleans have to sort opposite way
-            //pagination
-            .Skip((requestParameters.PageNumber - 1) * requestParameters.PageSize)
-            .Take(requestParameters.PageSize)          
             .ToList();
 
+        //total number of prints after filtering
+        aggregratedData.TotalPrintResults = aggregratedData.RelevantPrints.Count;
+
+        //apply pagination
+        aggregratedData.RelevantPrints = aggregratedData.RelevantPrints
+                                            .Skip((requestParameters.PageNumber - 1) * requestParameters.PageSize)
+                                            .Take(requestParameters.PageSize)
+                                            .ToList();
+
         //number of prints on current selected page
-            aggregratedData.PrintsOnCurrentPage = aggregratedData.RelevantPrints.Count;
+        aggregratedData.PrintsOnCurrentPage = aggregratedData.RelevantPrints.Count;
 
         return aggregratedData;
     }
