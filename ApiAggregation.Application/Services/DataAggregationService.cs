@@ -5,7 +5,7 @@ using ApiAggregation.Application.Interfaces.ExternalData;
 using ApiAggregation.Application.Mappers;
 using ApiAggregation.Application.Services;
 using ApiAggregation.Domain.DomainModels;
-using ApiAggregation.SharedUtilites;
+using Microsoft.Extensions.Logging;
 using Polly.CircuitBreaker;
 using System.Net;
 
@@ -16,10 +16,11 @@ public class DataAggregationService : IDataAggregationService
     private readonly ICountriesDataProvider _countriesDataProvider;
     private readonly INewsDataProvider _newsDataProvider;
     private readonly ILibraryDataProvider _libraryDataProvider;
-    private readonly IApiAggregationLogger _logger;
+    private readonly ILogger<DataAggregationService> _logger;
+
 
     public DataAggregationService(ICountriesDataProvider countriesDataProvider, INewsDataProvider newsDataProvider,
-                                    ILibraryDataProvider libraryDataProvider, IApiAggregationLogger logger)
+                                    ILibraryDataProvider libraryDataProvider, ILogger<DataAggregationService> logger)
     {
         _countriesDataProvider = countriesDataProvider ?? throw new ArgumentNullException(nameof(countriesDataProvider));
         _newsDataProvider = newsDataProvider ?? throw new ArgumentNullException(nameof(newsDataProvider));

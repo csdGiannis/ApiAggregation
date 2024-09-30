@@ -2,7 +2,7 @@
 
 API Aggregation Service
 
-## Description
+### Description
 
 This API Aggregation Service is designed to simplify data access by consolidating information from multiple external APIs
 into a single, unified endpoint. This service enhances the efficiency of data retrieval, allowing users to access various data sources 
@@ -15,7 +15,8 @@ News API which provides article data and OpenLibrary API which provides book dat
 The purpose of this API is to provide basic information, articles and books related to countries. For example, by inputting "Greece" and "Italy", 
 the user has the ability to find articles and books that associate with both of them. The user also has the ability to use keywords for more specific results, 
 filter, sort and paginate the results.
-In the current implementation, a local immutable array is used for validating the country inputs at the beggining to avoid reliance on external APIs, 
+
+In the current implementation, a local immutable array is used for validating the country inputs at the beggining, to avoid reliance on external APIs by 
 removing invalid inputs even if external services are down do implement this validation. However, in a real-world scenario, 
 a frequently updated database with formal country names would be used to ensure the data is always current and reliable.
 
