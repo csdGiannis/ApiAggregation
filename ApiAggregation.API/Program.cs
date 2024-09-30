@@ -40,7 +40,7 @@ builder.Services.AddSwaggerGen(c =>
         "News API which provides article data and OpenLibrary API which provides book data.\n" +
         "The purpose of this API is to provide basic information, articles and books related to countries. For example, by inputting \"Greece\" and " +
         "\"Italy\", the user has the ability to find articles and books that associate with both of them. The user also has the ability to use keywords " +
-        "for more specific results, filter, sort and paginate the results."
+        "for more specific results, filter, sort and paginate through the results."
     });
 
     var xmlCommentsFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
