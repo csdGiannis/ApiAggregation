@@ -20,7 +20,7 @@ namespace ApiAggregation.API.Installers
             }).AddPolicyHandler(Policy<HttpResponseMessage>
                .Handle<HttpRequestException>() //condition for the policy, only works when httprequest exception happens
                .OrResult(x => !x.IsSuccessStatusCode)
-               .CircuitBreakerAsync(handledEventsAllowedBeforeBreaking: 3, durationOfBreak: TimeSpan.FromSeconds(10))); //using Polly initialize circuit breaker
+               .CircuitBreakerAsync(handledEventsAllowedBeforeBreaking: 3, durationOfBreak: TimeSpan.FromSeconds(15))); //using Polly initialize circuit breaker
 
             services.AddScoped<INewsDataProvider, NewsDataProvider>();
             services.AddHttpClient<INewsDataProvider, NewsDataProvider>(client =>
@@ -32,7 +32,7 @@ namespace ApiAggregation.API.Installers
             }).AddPolicyHandler(Policy<HttpResponseMessage>
                 .Handle<HttpRequestException>()
                 .OrResult(x => !x.IsSuccessStatusCode)
-                .CircuitBreakerAsync(handledEventsAllowedBeforeBreaking: 3, durationOfBreak: TimeSpan.FromSeconds(10)));
+                .CircuitBreakerAsync(handledEventsAllowedBeforeBreaking: 3, durationOfBreak: TimeSpan.FromSeconds(15)));
 
             services.AddScoped<ILibraryDataProvider, LibraryDataProvider>();
             services.AddHttpClient<ILibraryDataProvider, LibraryDataProvider>(client =>
@@ -43,7 +43,7 @@ namespace ApiAggregation.API.Installers
             }).AddPolicyHandler(Policy<HttpResponseMessage>
                 .Handle<HttpRequestException>()
                 .OrResult(x => !x.IsSuccessStatusCode)
-                .CircuitBreakerAsync(handledEventsAllowedBeforeBreaking: 3, durationOfBreak: TimeSpan.FromSeconds(10)));
+                .CircuitBreakerAsync(handledEventsAllowedBeforeBreaking: 3, durationOfBreak: TimeSpan.FromSeconds(15)));
 
             return services;
         }

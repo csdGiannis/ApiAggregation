@@ -6,9 +6,9 @@ namespace ApiAggregation.Application.Mappers
     /// <summary>
     /// Maps Country Domain models to the CountryDtos
     /// </summary>
-    public static class CountriesDtoMapper
+    internal static class CountriesDtoMapper
     {
-        public static List<CountryDto> ToCountriesDto(this IEnumerable<Country> countries)
+        internal static List<CountryDto> ToCountriesDto(this IEnumerable<Country> countries)
         {
             var mappedCountries = new List<CountryDto>();
             foreach (var country in countries)

@@ -20,6 +20,7 @@
             </returns>
             <response code="200">Returns the aggregated data.</response>
             <response code="400">Bad request.</response>
+            <response code="404">Not Found.</response>
             <response code="406">Not acceptable. Supported output formats are JSON and XML.</response>
             <response code="500">Server error.</response>
         </member>

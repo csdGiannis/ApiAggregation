@@ -3,13 +3,13 @@ using ApiAggregation.Infrastructure.RestCountries.ResponseObjects;
 
 namespace ApiAggregation.Infrastructure.RestCountries;
 
-public static class CountryMapper
+internal static class CountryMapper
 {
     /// <summary>
     /// Maps RestCountries response object to the Domain model Country as an extention method
     /// </summary>
     /// <param name="countryResponse">The response object to be mapped to the Domain model</param>
-    public static Country ToCountry(this RestCountriesResponse countryResponse)
+    internal static Country ToCountry(this RestCountriesResponse countryResponse)
     {
         return new Country
         {

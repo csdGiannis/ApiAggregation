@@ -26,11 +26,27 @@ namespace ApiAggregation.API.Controllers
             RuleFor(r => r.PublishYear)
                 .Must(publishYear => publishYear != null ?
                     publishYear <= DateTime.Now.Year && publishYear >= 1700 : true)
-                    .WithMessage("The publish year can be from 1700 to current year.");
+                    .WithMessage("The publish year must be from 1700 to current year.");
             RuleFor(r => r.PageSize)
-                    .Must(pageSize => pageSize <= 100 && pageSize >= 10).WithMessage("The page size can be set from 10 to 100");
+                    .Must(pageSize => pageSize <= 100 && pageSize >= 10).WithMessage("The page size must be set from 10 to 100");
             RuleFor(r => r.PageNumber)
-                    .Must(pageNumber => pageNumber <= 200 && pageNumber >= 1).WithMessage("The page number can be set from 1 to 200");
+                    .Must(pageNumber => pageNumber <= 500 && pageNumber >= 1).WithMessage("The page number must be set from 1 to 500");
+            RuleFor(r => r.SortOrder)
+                    .Must(sortOrder => sortOrder == null || sortOrder == "" 
+                          ||string.Equals(sortOrder, "ascending", StringComparison.OrdinalIgnoreCase)
+                          || string.Equals(sortOrder, "descending", StringComparison.OrdinalIgnoreCase)
+                    ).WithMessage("The sort order must be empty, ascending or descending.");
+            RuleFor(r => r.SortField)
+                    .Must(sortField => sortField == null || sortField == ""
+                          || string.Equals(sortField, "title", StringComparison.OrdinalIgnoreCase)
+                          || string.Equals(sortField, "publishYear", StringComparison.OrdinalIgnoreCase)
+                          || string.Equals(sortField, "source", StringComparison.OrdinalIgnoreCase)
+                          || string.Equals(sortField, "description", StringComparison.OrdinalIgnoreCase)
+                          || string.Equals(sortField, "url", StringComparison.OrdinalIgnoreCase)
+                          || string.Equals(sortField, "isBook", StringComparison.OrdinalIgnoreCase)
+                    ).WithMessage($"The sort field must be empty, or one of the result Dto's properties (except of authorName and language).");
+            RuleFor(r => r.IsBook)
+                .Must(isBook => isBook == null || isBook == true || isBook == false).WithMessage("The IsBook must be null, true or false.");
         }
     }
 
@@ -60,6 +76,7 @@ namespace ApiAggregation.API.Controllers
         /// </returns>
         /// <response code="200">Returns the aggregated data.</response>
         /// <response code="400">Bad request.</response>
+        /// <response code="404">Not Found.</response>
         /// <response code="406">Not acceptable. Supported output formats are JSON and XML.</response>
         /// <response code="500">Server error.</response>
         [HttpGet]

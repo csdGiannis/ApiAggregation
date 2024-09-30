@@ -3,12 +3,12 @@ using ApiAggregation.Infrastructure.NewsApi.ResponseObjects;
 
 namespace ApiAggregation.Infrastructure.NewsApi
 {
-    public static class NewsMapper
+    internal static class NewsMapper
     {
         /// <summary>
         /// Maps News response objects to the News Domain model as an extention method
         /// </summary>
-        public static News ToNews(this NewsApiResponse newsResponse)
+        internal static News ToNews(this NewsApiResponse newsResponse)
         {
             List<Article> mappedArticles = new();
 
