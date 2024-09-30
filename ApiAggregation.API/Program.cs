@@ -1,10 +1,11 @@
 using Serilog;
-using ApiAggregation.API.Installers;
 using ApiAggregation.API.Middleware;
 using Serilog.Events;
 using ApiAggregation.Infrastructure;
 using ApiAggregation.API;
+using ApiAggregation.Application;
 
+//In real life situation the logger would be configured in the appsettings so changes could be applied without having to rebuild.
 Log.Logger = new LoggerConfiguration()
     .WriteTo.File("logs/ApiAggregation.txt", rollingInterval: RollingInterval.Day, restrictedToMinimumLevel: LogEventLevel.Warning)
     .WriteTo.Console(restrictedToMinimumLevel: LogEventLevel.Information)
@@ -37,6 +38,9 @@ app.UseMiddleware<ErrorHandlingMiddleware>();
 
 app.UseAuthorization();
 
-app.MapControllers();
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapControllers();
+});
 
 app.Run();

@@ -18,4 +18,9 @@
 		<ProjectReference Include="..\ApiAggregation.Application\ApiAggregation.Application.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+		<InternalsVisibleTo Include="ApiAggregation.Infrastructure.Tests" />
+	</ItemGroup>
+
+
 </Project>

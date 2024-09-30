@@ -24,31 +24,17 @@
             <response code="406">Not acceptable. Supported output formats are JSON and XML.</response>
             <response code="500">Server error.</response>
         </member>
-        <member name="M:ApiMetricsDemo.Metrics.MetricsController.Reset">
+        <member name="M:ApiAggregation.API.Controllers.MetricsController.Reset">
             <summary>
             Resets all client metrics.
             </summary>
             <returns>A response indicating the metrics have been reset.</returns>
         </member>
-        <member name="M:ApiMetricsDemo.Metrics.MetricsController.Reset(System.String)">
-            <summary>
-            Resets metrics for a specific client.
-            </summary>
-            <param name="clientName">The name of the client.</param>
-            <returns>A response indicating the client's metrics have been reset.</returns>
-        </member>
-        <member name="M:ApiMetricsDemo.Metrics.MetricsController.GetAllClientMetrics">
+        <member name="M:ApiAggregation.API.Controllers.MetricsController.GetAllClientMetrics">
             <summary>
             Gets metrics for all clients.
             </summary>
             <returns>A response containing metrics for all clients.</returns>
-        </member>
-        <member name="M:ApiMetricsDemo.Metrics.MetricsController.GetClientMetrics(System.String)">
-            <summary>
-            Gets metrics for a specific client.
-            </summary>
-            <param name="clientName">The name of the client.</param>
-            <returns>A response containing the client's metrics.</returns>
         </member>
     </members>
 </doc>

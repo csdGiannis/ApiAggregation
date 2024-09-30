@@ -1,8 +1,8 @@
 ﻿using ApiAggregation.Application.Interfaces.ExternalData;
+using ApiAggregation.Infrastructure.Metrics;
 using ApiAggregation.Infrastructure.NewsApi;
 using ApiAggregation.Infrastructure.OpenLibraryAPI;
 using ApiAggregation.Infrastructure.RestCountries;
-using ApiMetricsDemo.Metrics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.Net.Http.Headers;

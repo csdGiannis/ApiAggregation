@@ -1,12 +1,5 @@
 ﻿using ApiAggregation.Domain.DomainModels;
-using ApiAggregation.Infrastructure.NewsApi.ResponseObjects;
 using ApiAggregation.Infrastructure.OpenLibraryAPI.ResponseObjets;
-using ApiAggregation.Infrastructure.RestCountries.ResponseObjects;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ApiAggregation.Infrastructure.OpenLibraryAPI
 {

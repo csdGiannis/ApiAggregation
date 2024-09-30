@@ -1,8 +1,8 @@
 ﻿using System.Collections.Concurrent;
 
-namespace ApiMetricsDemo.Metrics
+namespace ApiAggregation.Infrastructure.Metrics
 {
-    public class MetricsService : IMetricsService
+    internal class MetricsService : IMetricsService
     {
 
         private readonly ConcurrentDictionary<string, RequestMetrics> _clientMetrics = new ConcurrentDictionary<string, RequestMetrics>();
@@ -20,12 +20,12 @@ namespace ApiMetricsDemo.Metrics
 
         public bool ResetClientMetrics(string? clientName = null)
         {
-            if (clientName != null)
+            if (clientName != null && _clientMetrics.Keys.Contains(clientName))
             {
-               return _clientMetrics.TryRemove(clientName, out _);
+                return _clientMetrics.TryRemove(clientName, out _);
             }
             _clientMetrics.Clear();
-            return true;
+            return false;
         }
     }
 }

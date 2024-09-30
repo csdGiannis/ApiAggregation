@@ -1,8 +1,8 @@
-﻿using AggregatedApi.Application.Services;
-using ApiAggregation.Application.Interfaces;
+﻿using ApiAggregation.Application.Interfaces;
+using ApiAggregation.Application.Services;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace ApiAggregation.API.Installers
+namespace ApiAggregation.Application
 {
     public static class DependencyInjection
     {

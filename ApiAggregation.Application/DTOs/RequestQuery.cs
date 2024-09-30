@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace ApiAggregation.Application.DTOs
+﻿namespace ApiAggregation.Application.DTOs
 {
     /// <summary>
     /// A DTO containing the query parameters for retrieving aggregated data.

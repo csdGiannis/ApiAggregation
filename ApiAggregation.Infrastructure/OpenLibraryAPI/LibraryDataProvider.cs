@@ -3,15 +3,9 @@ using ApiAggregation.Application.Errors;
 using ApiAggregation.Application.Interfaces.ExternalData;
 using ApiAggregation.Domain.DomainModels;
 using ApiAggregation.Infrastructure.OpenLibraryAPI.ResponseObjets;
-using ApiAggregation.Infrastructure.RestCountries.ResponseObjects;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Text;
-using System.Threading.Tasks;
-using static System.Reflection.Metadata.BlobBuilder;
 
 namespace ApiAggregation.Infrastructure.OpenLibraryAPI
 {

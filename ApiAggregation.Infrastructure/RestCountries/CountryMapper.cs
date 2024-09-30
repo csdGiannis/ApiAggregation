@@ -1,24 +1,25 @@
 ﻿using ApiAggregation.Domain.DomainModels;
 using ApiAggregation.Infrastructure.RestCountries.ResponseObjects;
 
-namespace ApiAggregation.Infrastructure.RestCountries;
-
-internal static class CountryMapper
+namespace ApiAggregation.Infrastructure.RestCountries
 {
-    /// <summary>
-    /// Maps RestCountries response object to the Domain model Country as an extention method
-    /// </summary>
-    /// <param name="countryResponse">The response object to be mapped to the Domain model</param>
-    internal static Country ToCountry(this RestCountriesResponse countryResponse)
+    internal static class CountryMapper
     {
-        return new Country
+        /// <summary>
+        /// Maps RestCountries response object to the Domain model Country as an extention method
+        /// </summary>
+        /// <param name="countryResponse">The response object to be mapped to the Domain model</param>
+        internal static Country ToCountry(this RestCountriesResponse countryResponse)
         {
-            NameOfficial = countryResponse.Name.Official ?? string.Empty,
-            NameCommon = countryResponse.Name.Common ?? string.Empty,
-            Capital = countryResponse.Capital.FirstOrDefault() ?? string.Empty,
-            Region = countryResponse.Region ?? string.Empty,
-            Population = countryResponse.Population,
-            Languages = countryResponse.Languages.Values.ToList()
-        };
+            return new Country
+            {
+                NameOfficial = countryResponse.Name.Official ?? string.Empty,
+                NameCommon = countryResponse.Name.Common ?? string.Empty,
+                Capital = countryResponse.Capital.FirstOrDefault() ?? string.Empty,
+                Region = countryResponse.Region ?? string.Empty,
+                Population = countryResponse.Population,
+                Languages = countryResponse.Languages.Values.ToList()
+            };
+        }
     }
 }

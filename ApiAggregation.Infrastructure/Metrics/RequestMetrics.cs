@@ -1,4 +1,4 @@
-﻿namespace ApiMetricsDemo.Metrics
+﻿namespace ApiAggregation.Infrastructure.Metrics
 {
     public class RequestMetrics
     {

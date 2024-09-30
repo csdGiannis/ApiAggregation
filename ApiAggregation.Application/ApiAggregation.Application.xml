@@ -185,13 +185,7 @@
             Maps Library and News Domain models to the RelevantPrintDtos
             </summary>
         </member>
-        <member name="M:ApiAggregation.Application.Services.UtilityService.ValidateCountries(System.Collections.Generic.IEnumerable{System.String})">
-            <summary>Validates user's input and returns the adjusted country name collection, removing any invalid inputs</summary>
-        </member>
-        <member name="M:ApiAggregation.Application.Services.UtilityService.FormatStringInputList(System.Collections.Generic.IEnumerable{System.String})">
-            <summary>Formats the IEnumerable of strings to trimmed,lower,non-empty and not-null List of strings</summary>
-        </member>
-        <member name="M:AggregatedApi.Application.Services.DataAggregationService.GetAggregatedDataAsync(ApiAggregation.Application.DTOs.RequestQuery,System.Threading.CancellationToken)">
+        <member name="M:ApiAggregation.Application.Services.DataAggregationService.GetAggregatedDataAsync(ApiAggregation.Application.DTOs.RequestQuery,System.Threading.CancellationToken)">
             <summary>Service responsible for implementing the simultaneous API calls after fetching and mapping the data from the clients.</summary>
             <remarks>
             First Domain models are created from the external data providers asynchronously.
@@ -199,7 +193,7 @@
             </remarks>
             <returns>An IEnumerable AggregatedDataDto object which contains all the external APIs data grouped per country</returns>
         </member>
-        <member name="M:AggregatedApi.Application.Services.DataAggregationService.ExecuteCountriesTask(ApiAggregation.Application.DTOs.RequestQuery,System.Threading.CancellationToken)">
+        <member name="M:ApiAggregation.Application.Services.DataAggregationService.ExecuteCountriesTask(ApiAggregation.Application.DTOs.RequestQuery,System.Threading.CancellationToken)">
             <summary>Executes a task to return external API's data</summary>
             <remarks>
             Try-catch block provides logging if Circuit breaker triggers
@@ -208,19 +202,25 @@
             </remarks>
             <returns>An IEnumerable of the corresponding Domain model</returns>
         </member>
-        <member name="M:AggregatedApi.Application.Services.DataAggregationService.ExecuteNewsTask(ApiAggregation.Application.DTOs.RequestQuery,System.Threading.CancellationToken)">
+        <member name="M:ApiAggregation.Application.Services.DataAggregationService.ExecuteNewsTask(ApiAggregation.Application.DTOs.RequestQuery,System.Threading.CancellationToken)">
             <summary>Executes a task to return external API's data, similarly to ExecuteCountriesTask</summary>
         </member>
-        <member name="M:AggregatedApi.Application.Services.DataAggregationService.ExecuteLibraryTask(ApiAggregation.Application.DTOs.RequestQuery,System.Threading.CancellationToken)">
+        <member name="M:ApiAggregation.Application.Services.DataAggregationService.ExecuteLibraryTask(ApiAggregation.Application.DTOs.RequestQuery,System.Threading.CancellationToken)">
             <summary>Executes a task to return external API's data, similarly to ExecuteCountriesTask</summary>
         </member>
-        <member name="M:AggregatedApi.Application.Services.DataAggregationService.MapAndAggregateDataPerCountry(System.Collections.Generic.IEnumerable{ApiAggregation.Domain.DomainModels.Country},ApiAggregation.Domain.DomainModels.News,ApiAggregation.Domain.DomainModels.Library,ApiAggregation.Application.DTOs.RequestQuery)">
+        <member name="M:ApiAggregation.Application.Services.DataAggregationService.MapAndAggregateDataPerCountry(System.Collections.Generic.IEnumerable{ApiAggregation.Domain.DomainModels.Country},ApiAggregation.Domain.DomainModels.News,ApiAggregation.Domain.DomainModels.Library,ApiAggregation.Application.DTOs.RequestQuery)">
             <summary>Private method responsible mapping the Domain models into Dtos</summary>
             <param name="countries">The mapped domain model returned from the RestCountries API</param>
             <param name="news">The mapped domain model returned from the News API</param>
             <param name="library">The mapped domain model returned from the OpenLibrary API</param>
             <param name="requestParameters">The optional filtering options</param>
             <returns>An filtered AggregatedDataDto object which contains all the external APIs data</returns>
+        </member>
+        <member name="M:ApiAggregation.Application.Services.UtilityService.ValidateCountries(System.Collections.Generic.IEnumerable{System.String})">
+            <summary>Validates user's input and returns the adjusted country name collection, removing any invalid inputs</summary>
+        </member>
+        <member name="M:ApiAggregation.Application.Services.UtilityService.FormatStringInputList(System.Collections.Generic.IEnumerable{System.String})">
+            <summary>Formats the IEnumerable of strings to trimmed,lower,non-empty and not-null List of strings</summary>
         </member>
     </members>
 </doc>
