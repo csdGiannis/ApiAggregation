@@ -2,7 +2,7 @@
 
 namespace ApiAggregation.Infrastructure.RestCountries.ResponseObjects;
 
-public class Name
+internal class Name
 {
     [JsonProperty("common")]
     public string Common { get; set; } = string.Empty;

@@ -6,9 +6,9 @@ namespace ApiAggregation.Application.Mappers
     /// <summary>
     /// Maps Library and News Domain models to the RelevantPrintDtos
     /// </summary>
-    public static class RelevantPrintDtoMapper
+    internal static class RelevantPrintDtoMapper
     {
-        public static ICollection<RelevantPrintDto> ToRelevantPrints(Library library, News news)
+        internal static ICollection<RelevantPrintDto> ToRelevantPrints(Library library, News news)
         {
             List<RelevantPrintDto> mappedRelevantPrintDtos = new();
 

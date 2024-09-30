@@ -10,7 +10,7 @@ namespace ApiAggregation.Application.DTOs
         /// <summary>
         /// An optional list of country names that are essential for filtering incoming results. The results must contain ALL the inputted countries.
         /// </summary>
-        /// <remarks>If left empty the incoming results are about "Greece".</remarks>
+        /// <remarks>Default contains the string "Greece".</remarks>
         public ICollection<string> CountryNames { get; set; } = new List<string> { "Greece" };
 
         /// <summary>
@@ -29,13 +29,15 @@ namespace ApiAggregation.Application.DTOs
         public int? PublishYear { get; set; }
 
         /// <summary>
-        /// The page number for pagination. Default is 1.
+        /// The page number for pagination.
         /// </summary>
+        /// <remarks>Default is 1.</remarks>
         public int PageNumber { get; set; } = 1;
 
         /// <summary>
-        /// The number of items per page for pagination. Default is 10.
+        /// The number of items per page for pagination.
         /// </summary>
+        /// <remarks>Default is 10.</remarks>
         public int PageSize { get; set; } = 10;
 
 

@@ -4,6 +4,129 @@
         <name>ApiAggregation.Application</name>
     </assembly>
     <members>
+        <member name="T:ApiAggregation.Application.DTOs.AggregratedDataDto">
+            <summary>
+            A DTO containing the aggregated data.
+            </summary>
+        </member>
+        <member name="P:ApiAggregation.Application.DTOs.AggregratedDataDto.CountriesInformation">
+            <summary>
+            A collection of CountryDtos that include basic countries information
+            </summary>
+            <remarks>Default contains the string "Greece".</remarks>
+        </member>
+        <member name="P:ApiAggregation.Application.DTOs.AggregratedDataDto.TotalPrintResults">
+            <summary>
+            A string containing the total number of prints found.
+            </summary>
+        </member>
+        <member name="P:ApiAggregation.Application.DTOs.AggregratedDataDto.PrintsOnCurrentPage">
+            <summary>
+            An integer containing the number of prints returned based on the current chosen pagination.
+            </summary>
+        </member>
+        <member name="P:ApiAggregation.Application.DTOs.AggregratedDataDto.PageNumber">
+            <summary>
+            An integer containing the current page number for pagination.
+            </summary>
+            <remarks>Default is 1.</remarks>
+        </member>
+        <member name="P:ApiAggregation.Application.DTOs.AggregratedDataDto.PageSize">
+            <summary>
+            An integer containing the current number of items per page for pagination.
+            </summary>
+            <remarks>Default is 10.</remarks>
+        </member>
+        <member name="P:ApiAggregation.Application.DTOs.AggregratedDataDto.RelevantPrints">
+            <summary>
+            A collection of RelevantPrintDtos that include the returned prints.
+            </summary>
+        </member>
+        <member name="T:ApiAggregation.Application.DTOs.CountryDto">
+            <summary>
+            A DTO containing each country's data.
+            </summary>
+        </member>
+        <member name="P:ApiAggregation.Application.DTOs.CountryDto.NameCommon">
+            <summary>
+            A string containing the country's common name. Usually short.
+            </summary>
+        </member>
+        <member name="P:ApiAggregation.Application.DTOs.CountryDto.NameOfficial">
+            <summary>
+            A string containing the country's official name. Often longer.
+            </summary>
+        </member>
+        <member name="P:ApiAggregation.Application.DTOs.CountryDto.Capital">
+            <summary>
+            A string containing the country's capital.
+            </summary>
+        </member>
+        <member name="P:ApiAggregation.Application.DTOs.CountryDto.Population">
+            <summary>
+            An integer containing the country's population.
+            </summary>
+        </member>
+        <member name="P:ApiAggregation.Application.DTOs.CountryDto.Region">
+            <summary>
+            A string containing the country's region.
+            </summary>
+        </member>
+        <member name="P:ApiAggregation.Application.DTOs.CountryDto.Languages">
+            <summary>
+            A collection of strings containing the country's most spoken languages.
+            </summary>
+        </member>
+        <member name="T:ApiAggregation.Application.DTOs.RelevantPrintDto">
+            <summary>
+            A DTO containing each print's data.
+            </summary>
+        </member>
+        <member name="P:ApiAggregation.Application.DTOs.RelevantPrintDto.Title">
+            <summary>
+            A string containing the print's title.
+            </summary>
+        </member>
+        <member name="P:ApiAggregation.Application.DTOs.RelevantPrintDto.PublishYear">
+            <summary>
+            A string containing the print's publish year.
+            </summary>
+        </member>
+        <member name="P:ApiAggregation.Application.DTOs.RelevantPrintDto.Description">
+            <summary>
+            A string containing the print's description.
+            </summary>
+            <remarks>Only articles contain a description.</remarks>
+        </member>
+        <member name="P:ApiAggregation.Application.DTOs.RelevantPrintDto.Source">
+            <summary>
+            A string containing the print's source.
+            </summary>
+            <remarks>Only articles contain a source.</remarks>
+        </member>
+        <member name="P:ApiAggregation.Application.DTOs.RelevantPrintDto.Url">
+            <summary>
+            A string containing the print's url for the full article.
+            </summary>
+            <remarks>Only articles contain a url.</remarks>
+        </member>
+        <member name="P:ApiAggregation.Application.DTOs.RelevantPrintDto.AuthorName">
+            <summary>
+            A list of strings containing the authors of the print.
+            </summary>
+            <remarks>Only books contain author names.</remarks>
+        </member>
+        <member name="P:ApiAggregation.Application.DTOs.RelevantPrintDto.Language">
+            <summary>
+            A collection of strings containing the languages used on the print.
+            </summary>
+            <remarks>Only books contain information about the used languages.</remarks>
+        </member>
+        <member name="P:ApiAggregation.Application.DTOs.RelevantPrintDto.IsBook">
+            <summary>
+            A boolean to state if the print is either a book or an article.
+            </summary>
+        </member>
         <member name="T:ApiAggregation.Application.DTOs.RequestQuery">
             <summary>
             A DTO containing the query parameters for retrieving aggregated data.
@@ -13,7 +136,7 @@
             <summary>
             An optional list of country names that are essential for filtering incoming results. The results must contain ALL the inputted countries.
             </summary>
-            <remarks>If left empty the incoming results are about "Greece".</remarks>
+            <remarks>Default contains the string "Greece".</remarks>
         </member>
         <member name="P:ApiAggregation.Application.DTOs.RequestQuery.KeyWords">
             <summary>
@@ -32,13 +155,15 @@
         </member>
         <member name="P:ApiAggregation.Application.DTOs.RequestQuery.PageNumber">
             <summary>
-            The page number for pagination. Default is 1.
+            The page number for pagination.
             </summary>
+            <remarks>Default is 1.</remarks>
         </member>
         <member name="P:ApiAggregation.Application.DTOs.RequestQuery.PageSize">
             <summary>
-            The number of items per page for pagination. Default is 10.
+            The number of items per page for pagination.
             </summary>
+            <remarks>Default is 10.</remarks>
         </member>
         <member name="P:ApiAggregation.Application.DTOs.RequestQuery.SortOrder">
             <summary>
@@ -60,6 +185,12 @@
             Maps Library and News Domain models to the RelevantPrintDtos
             </summary>
         </member>
+        <member name="M:ApiAggregation.Application.Services.UtilityService.ValidateCountries(System.Collections.Generic.IEnumerable{System.String})">
+            <summary>Validates user's input and returns the adjusted country name collection, removing any invalid inputs</summary>
+        </member>
+        <member name="M:ApiAggregation.Application.Services.UtilityService.FormatStringInputList(System.Collections.Generic.IEnumerable{System.String})">
+            <summary>Formats the IEnumerable of strings to trimmed,lower,non-empty and not-null List of strings</summary>
+        </member>
         <member name="M:AggregatedApi.Application.Services.DataAggregationService.GetAggregatedDataAsync(ApiAggregation.Application.DTOs.RequestQuery,System.Threading.CancellationToken)">
             <summary>Service responsible for implementing the simultaneous API calls after fetching and mapping the data from the clients.</summary>
             <remarks>
@@ -72,10 +203,16 @@
             <summary>Executes a task to return external API's data</summary>
             <remarks>
             Try-catch block provides logging if Circuit breaker triggers
-            Allows 3 unsuccessful tries within 20 seconds separately. 
+            Allows 3 unsuccessful tries within 15 seconds separately. 
             Catching the error (before reaching the middleware error handler) allows to log it, while the application is still running 
             </remarks>
             <returns>An IEnumerable of the corresponding Domain model</returns>
+        </member>
+        <member name="M:AggregatedApi.Application.Services.DataAggregationService.ExecuteNewsTask(ApiAggregation.Application.DTOs.RequestQuery,System.Threading.CancellationToken)">
+            <summary>Executes a task to return external API's data, similarly to ExecuteCountriesTask</summary>
+        </member>
+        <member name="M:AggregatedApi.Application.Services.DataAggregationService.ExecuteLibraryTask(ApiAggregation.Application.DTOs.RequestQuery,System.Threading.CancellationToken)">
+            <summary>Executes a task to return external API's data, similarly to ExecuteCountriesTask</summary>
         </member>
         <member name="M:AggregatedApi.Application.Services.DataAggregationService.MapAndAggregateDataPerCountry(System.Collections.Generic.IEnumerable{ApiAggregation.Domain.DomainModels.Country},ApiAggregation.Domain.DomainModels.News,ApiAggregation.Domain.DomainModels.Library,ApiAggregation.Application.DTOs.RequestQuery)">
             <summary>Private method responsible mapping the Domain models into Dtos</summary>
@@ -84,9 +221,6 @@
             <param name="library">The mapped domain model returned from the OpenLibrary API</param>
             <param name="requestParameters">The optional filtering options</param>
             <returns>An filtered AggregatedDataDto object which contains all the external APIs data</returns>
-        </member>
-        <member name="M:AggregatedApi.Application.Services.DataAggregationService.FormatStringInputList(System.Collections.Generic.IEnumerable{System.String})">
-            <summary>Formats the IEnumerable of strings to trimmed,lower,non-empty and not-null List of strings</summary>
         </member>
     </members>
 </doc>

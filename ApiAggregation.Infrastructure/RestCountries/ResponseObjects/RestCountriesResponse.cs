@@ -2,7 +2,7 @@
 
 namespace ApiAggregation.Infrastructure.RestCountries.ResponseObjects;
 
-public class RestCountriesResponse
+internal class RestCountriesResponse
 {
     [JsonProperty("name")]
     public Name Name { get; set; } = new Name();

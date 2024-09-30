@@ -2,7 +2,7 @@
 
 namespace ApiAggregation.Infrastructure.NewsApi.ResponseObjects
 {
-    public class NewsApiResponse
+    internal class NewsApiResponse
     {
         [JsonProperty("status")]
         public string Status { get; set; } = string.Empty;

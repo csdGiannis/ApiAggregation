@@ -2,7 +2,7 @@
 
 namespace ApiAggregation.Infrastructure.NewsApi.ResponseObjects
 {
-    public class ArticleResponse
+    internal class ArticleResponse
     {
         [JsonProperty("source")]
         public Source Source { get; set; } 
